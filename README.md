@@ -44,10 +44,6 @@ Output folder:
 - `src/app/components/platform/...`: platform dashboard
 - `src/app/core/market.service.ts`: market/news data layer with API + fallback
 
-### Notes
-- Home is already aligned to the requested layout style.
-- Login and Platform can be further tuned for strict 1:1 parity if needed.
-- A CSS budget warning may appear for `platform.component.scss`; build still succeeds.
 
 ---
 
