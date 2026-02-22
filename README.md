@@ -95,8 +95,5 @@ Pasta de saída:
 - `src/app/components/platform/...`: dashboard da plataforma
 - `src/app/core/market.service.ts`: camada de dados de mercado/notícias com API + fallback
 
-### Observações
-- A Home já está alinhada ao estilo do layout solicitado.
-- Login e Platform podem ser ajustados para paridade visual 1:1, se você quiser.
-- Pode aparecer aviso de budget CSS em `platform.component.scss`; o build continua funcionando.
+
 # FinVest
