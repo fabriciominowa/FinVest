@@ -1,0 +1,17 @@
+﻿<div class="login-page">
+  <div class="login-box">
+    <h1>{{ i18n.t('login_title') }}</h1>
+    <p>{{ i18n.t('login_sub') }}</p>
+
+    <label>{{ i18n.t('login_email') }}</label>
+    <input [(ngModel)]="email" type="email" />
+
+    <label>{{ i18n.t('login_pass') }}</label>
+    <input [(ngModel)]="pass" type="password" (keydown.enter)="submit()" />
+
+    <div class="err" *ngIf="error()">Credenciais inválidas.</div>
+
+    <button class="btn-gold" (click)="submit()">{{ i18n.t('login_btn') }}</button>
+    <a routerLink="/" class="back">{{ i18n.t('login_back') }}</a>
+  </div>
+</div>

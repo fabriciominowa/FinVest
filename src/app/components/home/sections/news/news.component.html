@@ -1,0 +1,35 @@
+﻿<section id="news-section" style="padding:120px 60px;">
+  <div class="section-label">Mercado & Notícias</div>
+  <h2 class="section-title reveal">O que está movendo<br /><em>o mercado hoje</em></h2>
+  <div class="news-grid" *ngIf="market.news().length; else loadingNews">
+    <div class="news-featured reveal" id="news-featured">
+      <div class="news-featured-img">
+        <div class="news-featured-img-inner"></div>
+        <div class="news-featured-img-overlay"></div>
+        <div class="news-featured-img-text">Notícia em destaque</div>
+      </div>
+      <div class="news-featured-body">
+        <div class="news-cat">Mercado</div>
+        <div class="news-featured-title">{{ market.news()[0].title }}</div>
+        <div class="news-featured-desc">Atualização em tempo real com impacto em ativos monitorados na plataforma.</div>
+        <div class="news-meta"><span>{{ market.news()[0].source }}</span><span>{{ market.news()[0].when }}</span></div>
+      </div>
+    </div>
+    <div class="news-list-col reveal reveal-delay-2">
+      <div class="news-list-item" *ngFor="let n of market.news().slice(1, 7); let i = index">
+        <div class="news-list-num">0{{ i + 2 }}</div>
+        <div>
+          <div class="news-api-source">{{ n.source }}</div>
+          <div class="news-list-title">{{ n.title }}</div>
+          <div class="news-list-meta">{{ n.when }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #loadingNews>
+    <div style="padding:20px 0;color:var(--text3);font-family:var(--font-mono);font-size:11px">Carregando notícias...</div>
+  </ng-template>
+  <div style="text-align:center;margin-top:48px;">
+    <a class="btn-outline" href="/login">Ver análises completas na plataforma →</a>
+  </div>
+</section>

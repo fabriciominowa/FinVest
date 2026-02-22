@@ -1,0 +1,176 @@
+﻿<div class="platform-wrap">
+  <aside class="app-sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-text">Fin<span>Vest</span></div>
+      <div class="sb-logo-sub">Plataforma Institucional</div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar">GF</div>
+      <div>
+        <div class="sb-name">{{ auth.userName() }}</div>
+        <div class="sb-role">Gestor Sênior</div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section">Principal</div>
+      <button class="sb-item" [class.active]="activePage()==='dashboard'" (click)="setPage('dashboard')">◈ Dashboard</button>
+      <button class="sb-item" [class.active]="activePage()==='portfolio'" (click)="setPage('portfolio')">⬡ Portfolio</button>
+      <button class="sb-item" [class.active]="activePage()==='transactions'" (click)="setPage('transactions')">⇅ Transações</button>
+
+      <div class="sb-section">Mercado</div>
+      <button class="sb-item" [class.active]="activePage()==='b3'" (click)="setPage('b3')">▦ B3 ao Vivo</button>
+      <button class="sb-item" [class.active]="activePage()==='appnews'" (click)="setPage('appnews')">📰 Notícias</button>
+      <button class="sb-item" [class.active]="activePage()==='reports'" (click)="setPage('reports')">⌁ Relatórios</button>
+
+      <div class="sb-section">Gestão</div>
+      <button class="sb-item" [class.active]="activePage()==='companies'" (click)="setPage('companies')">⊞ Empresas</button>
+      <button class="sb-item" [class.active]="activePage()==='settings'" (click)="setPage('settings')">⚙ Configurações</button>
+    </nav>
+
+    <div class="sb-mkt">
+      <div class="sb-mkt-title">Mercado</div>
+      <div class="sb-mkt-row"><span>IBOV</span><strong>{{ ibovText() }}</strong></div>
+      <div class="sb-mkt-row"><span>USD</span><strong>R${{ usdText() }}</strong></div>
+      <div class="sb-mkt-row"><span>CDI</span><strong>{{ market.cdi().toFixed(2).replace('.', ',') }}%</strong></div>
+    </div>
+
+    <button class="sb-logout" (click)="i18n.toggle()">Idioma: {{ i18n.t('language') }}</button>
+    <button class="sb-logout" (click)="signOut()">{{ i18n.t('logout') }}</button>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-topbar">
+      <div class="app-topbar-title">{{ i18n.t('platform_title') }}</div>
+      <div class="tb-pill">IBOV {{ ibovText() }}</div>
+      <div class="tb-pill">USD R${{ usdText() }}</div>
+      <div class="tb-pill">CDI {{ market.cdi().toFixed(2).replace('.', ',') }}%</div>
+      <div class="tb-clock">{{ clock() }}</div>
+    </header>
+
+    <section class="app-page" [class.active]="activePage()==='dashboard'">
+      <div class="dash-ticker"><div class="dash-ticker-inner"><div class="dash-ticker-track"><span class="dt-item" *ngFor="let s of stocks()">{{ s.symbol }} · R$ {{ s.price.toFixed(2).replace('.', ',') }} · <span [class.up]="s.changePct>=0" [class.dn]="s.changePct<0">{{ s.changePct>=0?'+':'' }}{{ s.changePct.toFixed(2) }}%</span></span></div></div></div>
+
+      <div class="kpi-row">
+        <div class="kpi-box"><div class="kpi-lbl">AUM Total</div><div class="kpi-val">R$ 284,7M</div><div class="kpi-dlt up">▲ +3,24% mês</div></div>
+        <div class="kpi-box"><div class="kpi-lbl">Retorno YTD</div><div class="kpi-val">18,4%</div><div class="kpi-dlt up">▲ Alpha vs CDI</div></div>
+        <div class="kpi-box"><div class="kpi-lbl">IBOVESPA</div><div class="kpi-val">{{ ibovText() }}</div><div class="kpi-dlt" [class.up]="market.ibovPct()>=0" [class.dn]="market.ibovPct()<0">{{ market.ibovPct()>=0?'+':'' }}{{ market.ibovPct().toFixed(2) }}%</div></div>
+        <div class="kpi-box"><div class="kpi-lbl">USD/BRL</div><div class="kpi-val">R${{ usdText() }}</div><div class="kpi-dlt" [class.up]="market.usdPct()>=0" [class.dn]="market.usdPct()<0">{{ market.usdPct()>=0?'+':'' }}{{ market.usdPct().toFixed(2) }}%</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Performance do Portfolio</div></div>
+          <div class="panel-body"><canvas id="chart-perf" height="170"></canvas></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Alocação</div></div>
+          <div class="panel-body"><canvas id="chart-donut" width="140" height="140"></canvas></div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Últimas Transações</div></div>
+          <div class="t-head"><span>Ativo</span><span>Valor</span><span>Data</span><span>Status</span></div>
+          <div class="t-row" *ngFor="let t of txs" (click)="openTxModal(t)"><span>{{ t.name }}</span><span>{{ t.val }}</span><span>{{ t.date }}</span><span class="badge" [class.buy]="t.type==='buy'" [class.sell]="t.type==='sell'" [class.pend]="t.type==='pend'">{{ t.type }}</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Feed ao Vivo</div></div>
+          <div class="feed-item" *ngFor="let item of liveFeed()">{{ item }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-page" [class.active]="activePage()==='portfolio'">
+      <div class="port-grid">
+        <article class="port-card" *ngFor="let p of portfolio">
+          <div class="port-ticker">{{ p.ticker }}</div>
+          <div class="port-name">{{ p.name }}</div>
+          <div class="port-type">{{ p.type }}</div>
+          <div class="port-val">{{ p.val }}</div>
+          <div class="kpi-dlt" [class.up]="p.chg>=0" [class.dn]="p.chg<0">{{ p.chg>=0?'▲':'▼' }} {{ abs(p.chg).toFixed(1) }}%</div>
+          <div class="port-bar"><div class="port-bar-fill" [style.width.%]="barWidth(p.pct)" [style.background]="p.color"></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="app-page" [class.active]="activePage()==='transactions'">
+      <div class="panel">
+        <div class="t-head"><span>Ativo / Empresa</span><span>Valor</span><span>Rentab.</span><span>Status</span></div>
+        <div class="t-row" *ngFor="let t of txs" (click)="openTxModal(t)"><span>{{ t.name }} · {{ t.co }}</span><span>{{ t.val }}</span><span>{{ t.chg }}</span><span class="badge" [class.buy]="t.type==='buy'" [class.sell]="t.type==='sell'" [class.pend]="t.type==='pend'">{{ t.type }}</span></div>
+      </div>
+    </section>
+
+    <section class="app-page" [class.active]="activePage()==='b3'">
+      <div class="two-col-eq">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Ações — Ibovespa</div></div>
+          <div class="t-head"><span>Ticker</span><span>Preço</span><span>Var.</span></div>
+          <div class="t-row" *ngFor="let q of stocks()" (click)="openQuoteModal(q)"><span>{{ q.symbol }}</span><span>R$ {{ q.price.toFixed(2).replace('.', ',') }}</span><span [class.up]="q.changePct>=0" [class.dn]="q.changePct<0">{{ q.changePct>=0?'▲':'▼' }} {{ abs(q.changePct).toFixed(2) }}%</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">FII — Fundos Imobiliários</div></div>
+          <div class="t-head"><span>Ticker</span><span>Cota</span><span>Var.</span></div>
+          <div class="t-row" *ngFor="let f of fiis()" (click)="openQuoteModal(f)"><span>{{ f.symbol }}</span><span>R$ {{ f.price.toFixed(2).replace('.', ',') }}</span><span [class.up]="f.changePct>=0" [class.dn]="f.changePct<0">{{ f.changePct>=0?'▲':'▼' }} {{ abs(f.changePct).toFixed(2) }}%</span></div>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-head"><div class="panel-title">IBOVESPA Intraday</div></div><div class="panel-body"><canvas id="chart-ibov" height="140"></canvas></div></div>
+    </section>
+
+    <section class="app-page" [class.active]="activePage()==='appnews'">
+      <div class="panel-head filters">
+        <button class="chip" [class.on]="newsFilter()==='all'" (click)="setNewsFilter('all')">Todas</button>
+        <button class="chip" [class.on]="newsFilter()==='B3'" (click)="setNewsFilter('B3')">B3</button>
+        <button class="chip" [class.on]="newsFilter()==='Macro'" (click)="setNewsFilter('Macro')">Macro</button>
+        <button class="chip" [class.on]="newsFilter()==='FII'" (click)="setNewsFilter('FII')">FII</button>
+      </div>
+      <div class="two-col">
+        <div class="panel">
+          <div class="app-news-item" *ngFor="let n of appNews()"><div class="app-news-src">{{ n.source }}</div><div class="app-news-title">{{ n.title }} <span class="app-news-tag" [class.up]="n.tag==='up'" [class.dn]="n.tag==='dn'" [class.nt]="n.tag==='nt'">{{ n.tag.toUpperCase() }}</span></div><div class="app-news-time">{{ n.when }}</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Sentimento</div></div>
+          <div class="panel-body"><canvas id="chart-sentiment" height="160"></canvas></div>
+          <div class="sentiment"><div class="bar"><div class="fill" [style.width.%]="sentiment()"></div></div><div class="lbl">{{ sentiment() }} — {{ sentiment()>55?'Otimista':'Cauteloso' }}</div></div>
+          <div class="panel-head"><div class="panel-title">Alertas</div></div>
+          <div class="panel-body"><div class="alert" *ngFor="let a of alerts()">{{ a }}</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-page" [class.active]="activePage()==='reports'">
+      <div class="two-col-eq">
+        <div class="panel"><div class="panel-head"><div class="panel-title">Retorno Mensal vs CDI</div></div><div class="panel-body"><canvas id="chart-bar" height="160"></canvas></div></div>
+        <div class="panel"><div class="panel-head"><div class="panel-title">VaR — Value at Risk</div></div><div class="panel-body"><canvas id="chart-var" height="160"></canvas></div></div>
+      </div>
+    </section>
+
+    <section class="app-page" [class.active]="activePage()==='companies'">
+      <div class="companies-grid">
+        <article class="company-card" *ngFor="let c of companies"><div class="company-name">{{ c.name }}</div><div class="company-seg">{{ c.seg }}</div><div class="company-aum">{{ c.aum }}</div></article>
+      </div>
+    </section>
+
+    <section class="app-page" [class.active]="activePage()==='settings'">
+      <div class="two-col-eq">
+        <div class="panel"><div class="panel-head"><div class="panel-title">Dados da Conta</div></div><div class="panel-body">{{ auth.userName() }} · gestor@finvest.com.br<br><br><button class="btn-gold" (click)="saveSettingsToast()">Salvar alterações</button></div></div>
+        <div class="panel"><div class="panel-head"><div class="panel-title">Status APIs</div></div><div class="panel-body">Fonte atual: {{ market.sourceLabel() }}<br>Quotes: {{ stocks().length }} ativos<br>Notícias: {{ appNews().length }} itens</div></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="modal-bg" *ngIf="modal()" (click)="closeModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeModal()">×</button>
+    <div class="modal-title">{{ modal()!.title }}</div>
+    <div class="modal-row" *ngFor="let l of modal()!.lines"><span>{{ l.k }}</span><strong>{{ l.v }}</strong></div>
+  </div>
+</div>
+
+<div class="toast" *ngIf="toast()" [class.ok]="toast()!.type==='ok'" [class.warn]="toast()!.type==='warn'">
+  <div class="toast-title">{{ toast()!.title }}</div>
+  <div class="toast-msg">{{ toast()!.msg }}</div>
+</div>
+

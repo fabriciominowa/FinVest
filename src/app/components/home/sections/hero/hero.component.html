@@ -1,0 +1,52 @@
+﻿<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Gestão de Investimentos B2B</div>
+    <h1 class="hero-title">
+      Capital que<br />trabalha com
+      <em>inteligência.</em>
+    </h1>
+    <p class="hero-desc">Plataforma institucional de gestão de investimentos para empresas. Acesse CRI, CRA, FIIs e debêntures com análise em tempo real, dados da B3 e relatórios sob medida.</p>
+    <div class="hero-actions">
+      <a class="btn-hero" routerLink="/login">Acessar Plataforma</a>
+      <a class="btn-hero-outline" href="#products">Conhecer Produtos</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-val">R$<span>2,8</span>B</div><div class="hero-stat-label">Sob Gestão</div></div>
+      <div><div class="hero-stat-val"><span>340</span>+</div><div class="hero-stat-label">Clientes B2B</div></div>
+      <div><div class="hero-stat-val"><span>18</span>%</div><div class="hero-stat-label">Retorno Médio</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-card">
+      <div class="hero-card-title">Mercado ao vivo</div>
+      <div class="live-market">
+        <div class="market-row" *ngFor="let q of heroQuotes()">
+          <span class="market-ticker">{{ q.symbol }}</span>
+          <span class="market-name" style="flex:1;margin:0 12px">Cotação em tempo real</span>
+          <span class="market-price">R${{ price(q.price) }}</span>
+          <span class="market-chg" [class.up]="q.changePct >= 0" [class.dn]="q.changePct < 0">{{ pct(q.changePct) }}</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:10px;letter-spacing:1px;text-transform:uppercase">Índices</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:12px">
+            <span style="color:var(--text3)">IBOVESPA</span>
+            <span>{{ market.ibov().toLocaleString('pt-BR') }} <span [class.up]="market.ibovPct() >= 0" [class.dn]="market.ibovPct() < 0">({{ market.ibovPct() >= 0 ? '+' : '' }}{{ market.ibovPct().toFixed(2) }}%)</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:12px">
+            <span style="color:var(--text3)">USD/BRL</span>
+            <span>R${{ market.usd().toFixed(3).replace('.', ',') }} <span [class.up]="market.usdPct() >= 0" [class.dn]="market.usdPct() < 0">{{ pct(market.usdPct()) }}</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:12px">
+            <span style="color:var(--text3)">CDI</span>
+            <span style="color:var(--gold)">{{ market.cdi().toFixed(2).replace('.', ',') }}% a.a.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

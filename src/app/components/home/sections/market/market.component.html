@@ -1,0 +1,9 @@
+﻿<div class="ticker-strip">
+  <div class="ticker-track" id="ticker-track-pub">
+    <div class="ticker-item" *ngFor="let q of trackQuotes()">
+      <span class="t-name">{{ q.symbol }}</span>
+      <span class="t-price">R${{ q.price.toFixed(2).replace('.', ',') }}</span>
+      <span class="t-chg" [class.up]="q.changePct >= 0" [class.dn]="q.changePct < 0">{{ q.changePct >= 0 ? '▲' : '▼' }}{{ abs(q.changePct).toFixed(2) }}%</span>
+    </div>
+  </div>
+</div>
